@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
-import altLogo from "../../assets/images/altlogo.png"; // renamed to altLogo
+import altLogo from "../../assets/images/altlogo.png";
 import { BiHomeSmile } from "react-icons/bi";
 import { AiOutlineUser, AiOutlineHeart } from "react-icons/ai";
 import { BsCart2, BsBox } from "react-icons/bs";
@@ -11,15 +11,12 @@ import { MdLogin, MdLogout } from "react-icons/md";
 import { useAuth } from "../../context/auth";
 import SearchBar from "./SearchBar";
 import { useCart } from "../../context/cart";
-// import { toast } from "react-toastify";
-// import LogOut from "../../pages/Auth/LogOut";
 
 const Header = () => {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const headerRef = useRef(null);
-
-    const { auth, setAuth, LogOut } = useAuth();
-    const [cartItems, setCartItems] = useCart();
+    const { auth, LogOut } = useAuth();
+    const [cartItems] = useCart();
     const [currentLogo, setCurrentLogo] = useState(logo);
 
     let closeTimeout;
@@ -27,6 +24,7 @@ const Header = () => {
         clearTimeout(closeTimeout);
         setDropdownOpen(true);
     };
+
     const closeDropdown = () => {
         closeTimeout = setTimeout(() => {
             setDropdownOpen(false);
@@ -52,74 +50,68 @@ const Header = () => {
 
     useEffect(() => {
         window.addEventListener("scroll", handleStickyHeader);
-        // Clean up function
-        return () => {
+        return () =>
             window.removeEventListener("scroll", handleStickyHeader);
-        };
     }, []);
 
     return (
         <header ref={headerRef}>
             <nav className="container header-main px-4 md:px-[50px]">
-                <div className="flex gap-[20px] items-center justify-between w-[100%] flex-col md:flex-row sm:flex-row lg:flex-row">
-                    {/* Search Bar */}
-                    <SearchBar />
+                {/* Desktop Header Layout */}
+                <div className="hidden md:flex items-center justify-between">
+                    {/* Desktop Search Bar */}
+                    <div className="flex-1 flex gap-[30px] ">
+                        <SearchBar />
+                    </div>
 
-                    {/* Logo */}
-                    <Link to="/">
-                        <img src={currentLogo} alt="logo" className="max-h-fit" />
-                    </Link>
+                    {/* Desktop Logo */}
+                    <div className="flex-shrink-0 mx-4">
+                        <Link to="/">
+                            <img
+                                src={currentLogo}
+                                alt="logo"
+                                className="w-auto"
+                            />
+                        </Link>
+                    </div>
 
-                    <div className="flex gap-[20px] flex-col md:flex-row sm:flex-row lg:flex-row">
-                        {/* Home */}
-                        <div className="flex items-center group">
-                            <NavLink to="/" className="flex items-center gap-1">
-                                <BiHomeSmile className="text-[22px]" />
-                                <span className="text-[18px] hidden md:block lg:block group-hover:text-slate-700">
-                                    Home
-                                </span>
-                            </NavLink>
-                        </div>
+                    {/* Desktop Icons */}
+                    <div className="flex-1 flex justify-end items-center gap-4">
+                        <NavLink to="/" className="flex items-center gap-1">
+                            <BiHomeSmile className="text-[22px]" />
+                        </NavLink>
 
-                        {/* Account */}
                         <div
-                            className={`flex items-center relative cursor-pointer group ${
-                                auth.user ? "hover:bg-slate-100" : "hover:bg-primaryBlue"
-                            } rounded-md p-1`}
+                            className="relative cursor-pointer p-1 rounded-md hover:bg-slate-100"
                             onMouseEnter={toggleDropdown}
                             onMouseLeave={closeDropdown}
                         >
                             {auth.user ? (
                                 <div className="flex items-center gap-1">
                                     <AiOutlineUser className="text-[22px]" />
-                                    <span className="text-[18px] max-w-fit hidden md:block lg:block">
-                                        <p>{auth.user.name.split(" ")[0]}</p>
+                                    <span className="text-[18px]">
+                                        {auth.user.name.split(" ")[0]}
                                     </span>
-                                    <span>
-                                        <RiArrowDropDownLine className="group-hover:rotate-[180deg] transition-all" />
-                                    </span>
+                                    <RiArrowDropDownLine className="transition-all" />
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-1 w-fit">
+                                <div className="flex items-center gap-1">
                                     <Link
                                         to="/login"
-                                        className="flex gap-1 group-hover:text-white"
+                                        className="flex items-center gap-1"
                                     >
-                                        <AiOutlineUser className="text-[22px] group-hover:text-white" />
-                                        <span className="text-[18px] max-w-fit hidden md:block lg:block">
-                                            <p>Sign in</p>
+                                        <AiOutlineUser className="text-[22px]" />
+                                        <span className="text-[18px]">
+                                            Sign in
                                         </span>
                                     </Link>
-                                    <span>
-                                        <RiArrowDropDownLine className="group-hover:rotate-[180deg] transition-all group-hover:text-white" />
-                                    </span>
+                                    <RiArrowDropDownLine className="transition-all" />
                                 </div>
                             )}
 
-                            {/* Dropdown menu */}
                             {isDropdownOpen && (
                                 <div
-                                    className="absolute top-[36px] -left-[2px] z-50 bg-white border border-gray-300 rounded-md p-2 w-[140px] transition-all flex flex-col"
+                                    className="absolute top-full left-0 mt-2 z-50 bg-white border border-gray-300 rounded-md p-2 w-[140px]"
                                     onMouseEnter={toggleDropdown}
                                     onMouseLeave={closeDropdown}
                                 >
@@ -199,22 +191,146 @@ const Header = () => {
                             )}
                         </div>
 
-                        {/* Cart */}
                         {auth?.user?.role !== 1 && (
-                            <div className="flex items-center gap-1 group">
-                                <NavLink
-                                    to="/cart"
-                                    className="relative flex items-center gap-1"
+                            <NavLink
+                                to="/cart"
+                                className="relative flex items-center gap-1"
+                            >
+                                <span className="absolute w-4 h-4 text-[11px] text-center font-semibold left-2 bottom-3 text-white bg-red-500 rounded-full">
+                                    {cartItems?.length}
+                                </span>
+                                <BsCart2 className="text-[22px]" />
+                            </NavLink>
+                        )}
+                    </div>
+                </div>
+
+                {/* Mobile Header Layout */}
+                <div className="flex md:hidden items-center justify-between">
+                    {/* Smaller Logo */}
+                    <Link to="/">
+                        <img src={currentLogo} alt="logo" className="w-20" />
+                    </Link>
+                    {/* Icons */}
+                    <div className="flex items-center gap-4">
+                        <NavLink to="/" className="flex items-center gap-1">
+                            <BiHomeSmile className="text-[22px]" />
+                        </NavLink>
+
+                        <div
+                            className="relative cursor-pointer p-1 rounded-md hover:bg-slate-100"
+                            onMouseEnter={toggleDropdown}
+                            onMouseLeave={closeDropdown}
+                        >
+                            {auth.user ? (
+                                <div className="flex items-center gap-1">
+                                    <AiOutlineUser className="text-[22px]" />
+                                    <RiArrowDropDownLine className="transition-all" />
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-1">
+                                    <Link
+                                        to="/login"
+                                        className="flex items-center gap-1"
+                                    >
+                                        <AiOutlineUser className="text-[22px]" />
+                                    </Link>
+                                    <RiArrowDropDownLine className="transition-all" />
+                                </div>
+                            )}
+
+                            {isDropdownOpen && (
+                                <div
+                                    className="absolute top-full left-0 mt-2 z-50 bg-white border border-gray-300 rounded-md p-2 w-[140px]"
+                                    onMouseEnter={toggleDropdown}
+                                    onMouseLeave={closeDropdown}
                                 >
-                                    <span className="absolute w-4 h-4 text-[11px] text-center font-semibold left-2 bottom-3 text-white bg-red-500 rounded-[50%]">
-                                        {cartItems?.length}
-                                    </span>
-                                    <BsCart2 className="text-[22px]" />
-                                    <span className="hidden md:block lg:block group-hover:text-slate-700">
-                                        <p className="text-[18px]">Cart</p>
-                                    </span>
-                                </NavLink>
-                            </div>
+                                    <ul>
+                                        {!auth.user && (
+                                            <li className="p-1 hover:bg-slate-100 rounded-md">
+                                                <Link
+                                                    to="/register"
+                                                    className="flex items-center gap-3"
+                                                >
+                                                    <MdLogin className="text-[14px]" />
+                                                    <span className="text-[16px]">
+                                                        Sign up
+                                                    </span>
+                                                </Link>
+                                            </li>
+                                        )}
+                                        <li className="p-1 hover:bg-slate-100 rounded-md">
+                                            <Link
+                                                to={`${
+                                                    auth?.user?.role === 1
+                                                        ? "/admin"
+                                                        : "/user"
+                                                }/dashboard`}
+                                                className="flex items-center gap-3"
+                                            >
+                                                <AiOutlineUser className="text-[14px]" />
+                                                <span className="text-[16px]">
+                                                    My Profile
+                                                </span>
+                                            </Link>
+                                        </li>
+                                        {auth.user?.role !== 1 && (
+                                            <li className="p-1 hover:bg-slate-100 rounded-md">
+                                                <Link
+                                                    to="/user/wishlist"
+                                                    className="flex items-center gap-3"
+                                                >
+                                                    <AiOutlineHeart className="text-[14px]" />
+                                                    <span className="text-[16px]">
+                                                        Wishlist
+                                                    </span>
+                                                </Link>
+                                            </li>
+                                        )}
+                                        <li className="p-1 hover:bg-slate-100 rounded-md">
+                                            <Link
+                                                to={`${
+                                                    auth?.user?.role === 1
+                                                        ? "/admin"
+                                                        : "/user"
+                                                }/orders`}
+                                                className="flex items-center gap-3"
+                                            >
+                                                <BsBox className="text-[14px]" />
+                                                <span className="text-[16px]">
+                                                    Orders
+                                                </span>
+                                            </Link>
+                                        </li>
+                                        {auth.user && (
+                                            <li className="p-1 hover:bg-slate-100 rounded-md">
+                                                <Link
+                                                    onClick={handleLogout}
+                                                    to="/login"
+                                                    className="flex items-center gap-3"
+                                                >
+                                                    <MdLogout className="text-[14px]" />
+                                                    <span className="text-[16px]">
+                                                        Logout
+                                                    </span>
+                                                </Link>
+                                            </li>
+                                        )}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+
+                        {auth?.user?.role !== 1 && (
+                            <NavLink
+                                to="/cart"
+                                className="relative flex items-center gap-1"
+                            >
+                                <span className="absolute w-4 h-4 text-[11px] text-center font-semibold left-2 bottom-3 text-white bg-red-500 rounded-full">
+                                    {cartItems?.length}
+                                </span>
+                                <BsCart2 className="text-[22px]" />
+                            </NavLink>
                         )}
                     </div>
                 </div>
