@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    section {
+        @apply py-[75px];
+    }
+}
+
+@layer components {
+    .container {
+        @apply px-5 max-w-[100vw];
+    }
+}
+
+
+.header-main{
+    padding-top:5px;
+    padding-bottom:5px;
+    border-top: 6px solid #a68bdc;
+
+}
