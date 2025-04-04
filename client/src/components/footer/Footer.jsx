@@ -176,7 +176,6 @@ const Footer = () => (
             <a href="#">
                 <p className="text-md text-gray-700 capitalize xl:text-center">
                     © {new Date().getFullYear()} All rights reserved - Leon Pasabay DS
-                    Dhiman
                 </p>
             </a>
         </div>
