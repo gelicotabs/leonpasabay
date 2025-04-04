@@ -63,6 +63,8 @@ app.use("/api/v1/product", productRoute);
 app.use("/api/v1/categories", categoriesRoute);
 app.use("/api/v1/user", userRoute);
 
+
+app.use(express.static(path.join(__dirname, "../client/public")));
 // app.use("*", function (req, res) {
 //     res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 // });
